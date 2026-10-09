@@ -3,7 +3,11 @@
 Um MVP (Minimum Viable Product) que converte perguntas em português em consultas SQL
 sobre logs de falhas de transmissão.
 
+[![CI](https://github.com/KawanVictor/SQL-Interface/actions/workflows/ci.yml/badge.svg)](https://github.com/KawanVictor/SQL-Interface/actions/workflows/ci.yml)
+
 Repositório: https://github.com/KawanVictor/SQL-Interface
+
+![Tela do Text to SQL: pergunta, resultado por canal e SQL gerado](docs/screenshot.png)
 
 ## Estrutura do projeto
 
@@ -109,4 +113,9 @@ pip install -r requirements-dev.txt
 pytest
 ```
 
-Os testes não precisam de banco de dados.
+Os testes não precisam de banco de dados. O GitHub Actions roda os testes do backend
+e o build do frontend a cada push e pull request.
+
+## Licença
+
+[MIT](LICENSE)
