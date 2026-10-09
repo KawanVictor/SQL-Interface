@@ -2,6 +2,7 @@ import os
 import logging
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, text, event
+from sqlalchemy.engine import URL
 from sqlalchemy.pool import QueuePool
 
 load_dotenv()
@@ -12,9 +13,15 @@ DB_PASSWORD = os.getenv("DB_PASSWORD", "")
 DB_NAME     = os.getenv("DB_NAME", "text_to_sql_mvp")
 DB_PORT     = os.getenv("DB_PORT", "3306")
 
-# usar driver mariadb; a string de conexão usa o dialect+driver
-DATABASE_URL = (
-    f"mariadb+mariadbconnector://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+# PyMySQL é Python puro e conecta tanto em MySQL quanto em MariaDB.
+# URL.create escapa caracteres especiais da senha (@, :, /, #...).
+DATABASE_URL = URL.create(
+    "mysql+pymysql",
+    username=DB_USER,
+    password=DB_PASSWORD,
+    host=DB_HOST,
+    port=int(DB_PORT),
+    database=DB_NAME,
 )
 
 logger = logging.getLogger(__name__)
@@ -39,6 +46,13 @@ def set_session_options(dbapi_conn, _):
             cur.execute("SET time_zone = '+00:00'")
     except Exception as exc:
         logger.exception("Erro ao configurar sessão DB: %s", exc)
+
+
+def ping() -> str:
+    """Confirma que o banco responde e devolve o nome do servidor (MySQL/MariaDB)."""
+    with engine.connect() as conn:
+        version = conn.execute(text("SELECT VERSION()")).scalar_one()
+    return "mariadb" if "mariadb" in version.lower() else "mysql"
 
 
 def execute_query(sql: str, params: dict | None = None) -> list[dict]:

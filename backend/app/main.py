@@ -5,7 +5,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
-from app.database import execute_query
+from app.database import execute_query, ping
 from app.nlp_parser import parse_question
 from app.sql_builder import build_sql
 from app.sql_validator import validate_sql
@@ -86,7 +86,11 @@ async def query(q: Query, request: Request):
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "db": "mariadb"}
+    try:
+        return {"status": "ok", "db": ping()}
+    except Exception as exc:
+        server_log.error("HEALTH_DB_ERROR | error=%s", exc)
+        raise HTTPException(status_code=503, detail="Banco de dados indisponível.")
 
 
 @app.get("/metrics")

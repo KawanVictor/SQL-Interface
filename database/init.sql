@@ -13,15 +13,15 @@ CREATE TABLE IF NOT EXISTS logs (
     descricao        TEXT,
     data_evento      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     duracao_segundos INT          UNSIGNED,
-    severidade       ENUM('critico','alta','media','baixa') NOT NULL
+    severidade       ENUM('critico','alta','media','baixa') NOT NULL,
+    -- índices dentro do CREATE TABLE: o MySQL não aceita CREATE INDEX IF NOT EXISTS
+    INDEX idx_severidade  (severidade),
+    INDEX idx_data_evento (data_evento),
+    INDEX idx_canal       (canal),
+    INDEX idx_equipamento (equipamento)
 ) ENGINE=InnoDB
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
-
-CREATE INDEX IF NOT EXISTS idx_severidade   ON logs (severidade);
-CREATE INDEX IF NOT EXISTS idx_data_evento  ON logs (data_evento);
-CREATE INDEX IF NOT EXISTS idx_canal        ON logs (canal);
-CREATE INDEX IF NOT EXISTS idx_equipamento  ON logs (equipamento);
 
 INSERT INTO logs (canal, equipamento, tipo_erro, descricao, data_evento, duracao_segundos, severidade) VALUES
 ('Globo',     'Rewrapper-01', 'Perda de sinal', 'Falha crítica no sinal principal',  NOW() - INTERVAL 1 DAY,  12, 'critico'),
