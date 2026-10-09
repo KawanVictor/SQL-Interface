@@ -17,8 +17,7 @@ logging.basicConfig(
 audit_log = logging.getLogger("audit")
 server_log = logging.getLogger("server")
 
-from datetime import datetime
-START_TIME = datetime.utcnow()
+START_TIME = datetime.now(timezone.utc)
 
 app = FastAPI(title="Text-to-SQL MVP")
 
@@ -96,7 +95,7 @@ def health():
 @app.get("/metrics")
 def metrics():
     """Retorna métricas simples de saúde/tempo de atividade."""
-    uptime = datetime.utcnow() - START_TIME
+    uptime = datetime.now(timezone.utc) - START_TIME
     return {
         "status": "ok",
         "uptime_seconds": int(uptime.total_seconds()),
